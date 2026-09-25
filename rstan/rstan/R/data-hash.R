@@ -31,12 +31,12 @@
 #' Hashes the preprocessed values for variables declared in the model's data
 #' block. Additional elements in `data` are ignored.
 #'
-#' @param data A named list of data supplied to Stan.
-#' @param model A `stanmodel` or `stanfit` object defining the data block.
+#' @param object A `stanmodel` or `stanfit` object defining the data block.
+#' @param newdata A named list of candidate data supplied to Stan.
 #' @return A 32-character MD5 hash.
 #' @export
-data_hash <- function(data, model) {
-  .hash_stan_data(.prepare_stan_data_for_hash(data, model))
+data_hash <- function(object, newdata) {
+  .hash_stan_data(.prepare_stan_data_for_hash(newdata, object))
 }
 
 #' Compare data with the data used to create a stanfit
@@ -51,5 +51,5 @@ match_data_hash <- function(object, newdata) {
     stop("object must be a stanfit object", call. = FALSE)
   if (length(object@data_hash) != 1L || is.na(object@data_hash))
     return(NA)
-  identical(object@data_hash, data_hash(newdata, object))
+  identical(object@data_hash, data_hash(object, newdata))
 }

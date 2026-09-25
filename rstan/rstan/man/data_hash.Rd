@@ -7,13 +7,11 @@ Compute a compact hash of preprocessed data used by a Stan model, or compare
 candidate data with the hash recorded in a \code{stanfit} object.
 }
 \usage{
-data_hash(data, model)
+data_hash(object, newdata)
 match_data_hash(object, newdata)
 }
 \arguments{
-  \item{data}{A named list of data supplied to Stan.}
-  \item{model}{A \code{stanmodel} or \code{stanfit} object defining the data block.}
-  \item{object}{A \code{stanfit} object.}
+  \item{object}{A \code{stanmodel} or \code{stanfit} object defining the data block; for \code{match_data_hash}, it must be a \code{stanfit}.}
   \item{newdata}{A named list of candidate data.}
 }
 \details{
