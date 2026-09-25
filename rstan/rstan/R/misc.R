@@ -1594,7 +1594,7 @@ get_time_from_csv <- function(tlines) {
   t
 }
 
-parse_data <- function(cppcode) {
+.parse_data_names <- function(cppcode) {
   cppcode <- scan(what = character(), sep = "\n", quiet = TRUE,
                   text = cppcode)
   private <- grep("^private:$", cppcode) + 1L
@@ -1610,7 +1610,11 @@ parse_data <- function(cppcode) {
   objects <- gsub("^[[:digit:]]+", "\\1", objects)
   # Remove empty characters and trim whitespaces
   objects <- objects[nzchar(trimws(objects))]
+  objects
+}
 
+parse_data <- function(cppcode) {
+  objects <- .parse_data_names(cppcode)
   # Get them from the calling environment
   stuff <- list()
   for (int in seq_along(objects)) {

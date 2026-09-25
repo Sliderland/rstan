@@ -19,11 +19,10 @@
   if (is.null(names(data)))
     stop("data must be a named list", call. = FALSE)
 
-  # Keep only variables declared in the Stan data block. This follows the
-  # same name extraction path used by RStan when a list is supplied to fit.
-  data <- with(data, parse_data(get_cppcode(model)))
-  if (!is.list(data))
-    stop("could not determine the model data variables", call. = FALSE)
+  # Select declared variables without dynamic lookup: parse_data() uses
+  # dynGet() for fitting, which does not work from this helper's call frame.
+  data_names <- .parse_data_names(get_cppcode(model))
+  data <- data[intersect(data_names, names(data))]
   data_preprocess(data)
 }
 
