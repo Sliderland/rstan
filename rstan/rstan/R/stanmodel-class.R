@@ -79,6 +79,7 @@ new_empty_stanfit <- function(stanmodel, miscenv = new.env(parent = emptyenv()),
       stan_args = stan_args,
       stanmodel = stanmodel,
       date = date(),
+      data_hash = character(0),
       .MISC = miscenv)
 }
 
@@ -343,6 +344,7 @@ setMethod("vb", "stanmodel",
                         # keep a ref to avoid garbage collection
                         # (see comments in fun stan_model)
                         date = date(),
+                        data_hash = .hash_stan_data(data),
                         .MISC = sfmiscenv)
             return(nfit)
           })
@@ -563,6 +565,7 @@ setMethod("sampling", "stanmodel",
               cat('\n', "COMPILING MODEL '", object@model_name,
                   "' NOW.\n", sep = '')
             dots <- list(...)
+            data_hash <- .hash_stan_data(data)
             data$CHAIN_ID <- dots$chain_id
             if (verbose)
               cat('\n', "STARTING SAMPLER FOR MODEL '", object@model_name,
@@ -872,6 +875,7 @@ setMethod("sampling", "stanmodel",
                           # keep a ref to avoid garbage collection
                           # (see comments in fun stan_model)
                         date = date(),
+                        data_hash = data_hash,
                         .MISC = sfmiscenv)
             if (cores > 0) throw_sampler_warnings(nfit)
             return(nfit)
@@ -990,6 +994,7 @@ setMethod("gqs", "stanmodel",
               # keep a ref to avoid garbage collection
               # (see comments in fun stan_model)
               date = date(),
+              data_hash = .hash_stan_data(data),
               .MISC = sfmiscenv)
   return(nfit)
 })

@@ -26,6 +26,8 @@ export(
   stanc_builder,
   stan_version,
   stan,
+  data_hash,
+  match_data_hash,
   stan_rdump,
   read_rdump,
   makeconf_path,

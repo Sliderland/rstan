@@ -61,8 +61,10 @@ setClass(Class = "stanfit",
            stan_args = "list", 
            stanmodel = "stanmodel", # the instance of S4 class stanmodel 
            date = "character", # the date samples were drawn 
+           data_hash = "character", # hash of the preprocessed model data
            .MISC = "environment"
-         ),  
+         ),
+         prototype = prototype(data_hash = NA_character_),
          validity = function(object) {
            if(length(object@sim) > 0 && !is.null(object@sim$samples)) {
              NAs <- rapply(object@sim$samples, f = function(x) anyNA(x))

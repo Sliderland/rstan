@@ -792,6 +792,12 @@ sflist2stanfit <- function(sflist) {
               stan_args = do.call(c, lapply(sflist, function(x) x@stan_args)), 
               stanmodel = sflist[[1]]@stanmodel, 
               date = date(), 
+              data_hash = if (all(vapply(sflist, function(x)
+                length(x@data_hash) == 1L && !is.na(x@data_hash), logical(1))) &&
+                length(unique(vapply(sflist, function(x) x@data_hash,
+                                     character(1)))) == 1L) {
+                sflist[[1]]@data_hash
+              } else NA_character_,
               .MISC = new.env(parent = emptyenv())) 
   return(nfit)
 } 
@@ -882,4 +888,3 @@ dimnames.stanfit <- function(x) {
   list(iterations = NULL, chains = paste0("chain:", cids), parameters = x@sim$fnames_oi) 
 }
 is.array.stanfit <- function(x)  return(x@mode == 0)
-
