@@ -21,16 +21,23 @@
   if (is(model, "stanfit")) model <- get_stanmodel(model)
   if (!is(model, "stanmodel"))
     stop("model must be a stanmodel or stanfit object", call. = FALSE)
-  if (is.environment(data)) data <- as.list(data)
-  if (!is.list(data) || is.data.frame(data))
+  if (!is.environment(data) && (!is.list(data) || is.data.frame(data)))
     stop("data must be a named list or environment", call. = FALSE)
-  if (is.null(names(data)))
+  if (is.list(data) && is.null(names(data)))
     stop("data must be a named list or environment", call. = FALSE)
 
   # Select declared variables without dynamic lookup: parse_data() uses
   # dynGet() for fitting, which does not work from this helper's call frame.
   data_names <- .parse_data_names(get_cppcode(model))
-  data <- data[intersect(data_names, names(data))]
+  if (is.environment(data)) {
+    # Match list handling: use only bindings declared in the Stan data block,
+    # and don't include inherited bindings or unrelated environment entries.
+    present <- data_names[vapply(data_names, exists, logical(1),
+                                 envir = data, inherits = FALSE)]
+    data <- mget(present, envir = data, inherits = FALSE)
+  } else {
+    data <- data[intersect(data_names, names(data))]
+  }
   data_preprocess(data)
 }
 
