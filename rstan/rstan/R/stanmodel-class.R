@@ -344,7 +344,7 @@ setMethod("vb", "stanmodel",
                         # keep a ref to avoid garbage collection
                         # (see comments in fun stan_model)
                         date = date(),
-                        data_hash = .hash_stan_data(data),
+                        data_hash = .hash_stan_data(data, object),
                         .MISC = sfmiscenv)
             return(nfit)
           })
@@ -565,7 +565,7 @@ setMethod("sampling", "stanmodel",
               cat('\n', "COMPILING MODEL '", object@model_name,
                   "' NOW.\n", sep = '')
             dots <- list(...)
-            data_hash <- .hash_stan_data(data)
+            data_hash <- .hash_stan_data(data, object)
             data$CHAIN_ID <- dots$chain_id
             if (verbose)
               cat('\n', "STARTING SAMPLER FOR MODEL '", object@model_name,
@@ -994,7 +994,7 @@ setMethod("gqs", "stanmodel",
               # keep a ref to avoid garbage collection
               # (see comments in fun stan_model)
               date = date(),
-              data_hash = .hash_stan_data(data),
+              data_hash = .hash_stan_data(data, object),
               .MISC = sfmiscenv)
   return(nfit)
 })

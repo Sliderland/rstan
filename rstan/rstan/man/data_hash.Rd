@@ -12,11 +12,12 @@ match_data_hash(object, newdata)
 }
 \arguments{
   \item{object}{A \code{stanmodel} or \code{stanfit} object defining the data block; for \code{match_data_hash}, it must be a \code{stanfit}.}
-  \item{newdata}{A named list of candidate data.}
+  \item{newdata}{A named list or environment of candidate data.}
 }
 \details{
 Only variables declared in the model's data block are included; additional
-list elements are ignored. Values are preprocessed as by RStan, sorted by
+list elements or environment bindings are ignored. Environments are converted
+to lists as by RStan. Values are preprocessed as by RStan, sorted by
 variable name, serialized using serialization version 2, and hashed with
 \code{tools::md5sum}. The returned hash fingerprints the prepared R data
 representation and is not a cryptographic proof of provenance.

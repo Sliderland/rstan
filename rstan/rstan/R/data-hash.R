@@ -1,8 +1,15 @@
 # Hashing helpers for the data recorded in stanfit objects.
 
-.hash_stan_data <- function(data) {
+.hash_stan_data <- function(data, model = NULL) {
   if (!is.list(data))
     stop("data must be a list of preprocessed Stan data", call. = FALSE)
+  if (!is.null(model)) {
+    if (is(model, "stanfit")) model <- get_stanmodel(model)
+    if (!is(model, "stanmodel"))
+      stop("model must be a stanmodel or stanfit object", call. = FALSE)
+    data_names <- .parse_data_names(get_cppcode(model))
+    data <- data[intersect(data_names, names(data))]
+  }
   data <- data[order(names(data))]
   tmp <- tempfile()
   on.exit(unlink(tmp), add = TRUE)
@@ -14,10 +21,11 @@
   if (is(model, "stanfit")) model <- get_stanmodel(model)
   if (!is(model, "stanmodel"))
     stop("model must be a stanmodel or stanfit object", call. = FALSE)
+  if (is.environment(data)) data <- as.list(data)
   if (!is.list(data) || is.data.frame(data))
-    stop("data must be a named list", call. = FALSE)
+    stop("data must be a named list or environment", call. = FALSE)
   if (is.null(names(data)))
-    stop("data must be a named list", call. = FALSE)
+    stop("data must be a named list or environment", call. = FALSE)
 
   # Select declared variables without dynamic lookup: parse_data() uses
   # dynGet() for fitting, which does not work from this helper's call frame.
@@ -32,7 +40,7 @@
 #' block. Additional elements in `data` are ignored.
 #'
 #' @param object A `stanmodel` or `stanfit` object defining the data block.
-#' @param newdata A named list of candidate data supplied to Stan.
+#' @param newdata A named list or environment of candidate data supplied to Stan.
 #' @return A 32-character MD5 hash.
 #' @export
 data_hash <- function(object, newdata) {
@@ -42,7 +50,7 @@ data_hash <- function(object, newdata) {
 #' Compare data with the data used to create a stanfit
 #'
 #' @param object A `stanfit` object.
-#' @param newdata A named list of candidate data.
+#' @param newdata A named list or environment of candidate data.
 #' @return `TRUE` if the candidate data hash matches, `FALSE` if it differs,
 #'   or `NA` if the fit has no recorded data hash.
 #' @export
